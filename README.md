@@ -49,7 +49,7 @@ But how do we include all of your react components into this single index.html f
 The app.js file is one of the most important files of the boilerplate and contains all the global setup
 which eventually helps us rendering our application. Lets see what it is!
 
-- `@babel/polyfill` is imported first. This enables our app toe have some cool stuff like ES6 generator functions, `Promise`s, etc.
+- `@babel/polyfill` is imported first. This enables our app to have some cool stuff like ES6 generator functions, `Promise`s, etc.
 
 - A `history` object is created, which remembers all the browsing history for your app. This is used by the ConnectedRouter to know which pages your users visit.
 ``` import history from 'utils/history'; ```
@@ -267,7 +267,7 @@ style-loader => Inject CSS into the DOM i.e. puts the css from the .css files in
 
 babel-loader => Browsers dont understand the new modern Javascript syntax like the Class, Promises and the 
 generator functions. Hence, to make it work, what we need to do is convert this new JS syntax to the old 
-ES5 syntax which all browsers can understand, and this is what Babel does for us. It transpiles the new ES6 JS syntax to the old ES5 syntax
+ES5 syntax which all browsers can understand, and this is what Babel does for us. It transpiles the new ES6 JS syntax to the old ES5 syntax.
 
 file-loader => Apart from javascript, the browsers dont understand anything. Hence to deal with files other than .js, we need a mechanism which puts these files in our output directory and then gives us a path to that file (public uri) through which we can use that file in our project. 
 ``` import img from './file.png'; ```
@@ -304,10 +304,287 @@ The most basic way to use plugins is to put them in the plugins property of our 
 
 You may wonder why do we need to use the new keyword to instantiate a plugin. This is due to the fact that we can use the same plugin on different sets of files.
 
+Common Webpack Plugins :-
+
+HtmlWebpackPlugin :- 
+Manually adding all JavaScripts file to your HTML can be cumbersome. Thankfully, you don’t need to do that! HtmlWebpackPlugin does that for you.
+
+```
+    new HtmlWebpackPlugin({
+      template: 'app/index.html',
+      minify: {
+        removeComments: true,
+        collapseWhitespace: true,
+        removeRedundantAttributes: true,
+        useShortDoctype: true,
+        removeEmptyAttributes: true,
+        removeStyleLinkTypeAttributes: true,
+        keepClosingSlash: true,
+        minifyJS: true,
+        minifyCSS: true,
+        minifyURLs: true,
+      },
+      inject: true,
+    })
+```
+It will create the index.html file for us and drop it in the dist directory. Our output JavaScript code will be injected at the end of the  <body> tag like this, because we have set ``` inject: true ``` in the above code.
 
 
-##### Getting Started :
+```
+    <html>
+        <head>
+            <meta charset="UTF-8">
+            <title>Webpack App</title>
+        </head>
+        <body>
+            <script type="text/javascript" src="main.js"></script>
+        </body>
+    </html>
+```
+It will come in handy especially when the number of your files will grow since you would have to keep track of them and add all of them to the HTML file.
 
-![Alt text](todo.png?raw=true)
+Another important thing to note here is that your filenames might change due to the usage of hashes. It makes the HtmlWebpackPlugin even more useful because you don’t need to keep track of the filenames.
 
-Now, navaigate to [localhost:4200](http://localhost:4200) to run the app.
+What are hashes ? It is a chunk-specific hash that will be generated based on the contents of your file. It will change only if the content of the file itself changes. It is due to the fact, that browser knows whether to download the new file or to use the cached file. If the filename changes, the browser will know that it needs to be redownloaded. 
+
+Also, as you can see, there are many options which you can pass to this HtmlWebpackPlugin for it to work
+the way you want it to be. We have passed many options to minify property so that we reduce the size of our HTML files in turn helping us to download these files faster.
+
+OfflinePlugin :- 
+This plugin is intended to provide an offline experience for webpack projects. It uses ServiceWorker, and AppCache as a fallback under the hood. Simply include this plugin in your webpack.config, and the accompanying runtime in your client script, and your project will become offline ready by caching all (or some) of the webpack output assets.
+
+CompressionPlugin :-
+Prepare compressed versions of assets for the said files in the ``` test ``` property to serve them with Content-Encoding.
+
+WebpackPwaManifest Plugin :-
+This is a webpack plugin that generates a 'manifest.json' for your Progressive Web Application, with auto icon resizing and fingerprinting support.
+
+HashedModuleIdsPlugin :-
+This plugin will cause the chunk hashes which we talked about earlier to be based on the relative path of the module, generating a four character string as the module id. Usually this is for use in production.
+
+EnvironmentPlugin :- 
+The EnvironmentPlugin is shorthand for using the DefinePlugin on process.env keys like this :
+``` new webpack.EnvironmentPlugin(['NODE_ENV', 'DEBUG']) ```
+
+HotModuleReplacementPlugin :-
+Hot Module Replacement (HMR) exchanges, adds, or removes modules while an application is running, without a full reload. This can significantly speed up development as we dont have to reload our webpage  when we make some changes in our code. The browser directly reflects them without us having to reload the webpage.
+This is only valid for development mode and not for production.
+
+### Optimization :- 
+To understand optimization, you need to understand what code splitting is in webpack. 
+It allows you to split your code into more than one file. If used correctly, it can improve the performance of your application a lot. Of the reasons for it is the fact, that browsers are caching your code.
+So, every time I make a change, the entire file has to be re-downloaded by the user which contains some changed code, but most of the old code remains as is unchanged. Hence we can split our file such that 
+we make say 2 files out of it. one which usually doesnt change and hence users have to download them only once, and the 2nd file which usually keeps changing.
+
+
+```
+splitChunks: {
+      chunks: 'all',
+      maxInitialRequests: 10,
+      minSize: 0,
+      cacheGroups: {
+        vendor: {
+          test: /[\\/]node_modules[\\/]/,
+          name(module) {
+            const packageName = module.context.match(
+              /[\\/]node_modules[\\/](.*?)([\\/]|$)/,
+            )[1];
+            return `npm.${packageName.replace('@', '')}`;
+          },
+        },
+      },
+    }
+```
+This code generates vendor.js file (due to key named 'vendor') and contains all the files from our node_modules folder as defined in regex above.
+You can see this vendor.js file in your network tab when you load your app for the first time (in production mode as this is production configuration)
+You can  add multiple keys above like vendor and can pull out files from multiple folders in case vendor.js
+gets too huge in size to download or you want to split your files into multiple files as discussed earlier.
+
+TerserPlugin :- This plugin helps us minify JavaScript. We can pass various configuration options to this such as do we need comments in our minified file, can this file be cached and so on.
+```
+minimize: true,
+    minimizer: [
+      new TerserPlugin({
+        terserOptions: {
+          warnings: false,
+          compress: {
+            comparisons: false,
+          },
+          parse: {},
+          mangle: true,
+          output: {
+            comments: false,
+            ascii_only: true,
+          },
+        },
+        parallel: true,
+        cache: true,
+        sourceMap: true,
+      }),
+    ],
+```
+
+Performance :- 
+These options allows you to control how webpack notifies you of assets and entry points that exceed a specific file limit.
+```
+    performance: {
+        assetFilter: assetFilename =>
+        !/(\.map$)|(^(main\.|favicon\.))/.test(assetFilename),
+    }
+```
+Target :-
+``` target: 'web' ```
+
+webpack can compile for multiple environments or targets. Usually this is set to web or Node. 
+
+DevTools :- 
+``` devtool: 'eval-source-map' ```
+This option controls if and how source maps are generated.
+So what are source maps ?
+
+A source map provides a way of mapping code within a compressed file back to it’s original position in a source file. This means that – with the help of a bit of software – you can easily debug your applications even after your assets have been optimized. The Chrome and Firefox developer tools both ship with built-in support for source maps.
+
+As the name suggests, a source map consists of a whole bunch of links to the original source code that can be used to map the code within a compressed file back to it’s original source.
+
+
+Resolve :- 
+A resolver is a library which helps in locatig a module by its absolute path. These options change how modules are resolved.
+
+This is the reason why we could import anything directly from node_modules as you see in most of the React code because we have included it in our configuration as can be seen in the below code.
+``` 
+    resolve: {
+        modules: ['node_modules', 'app'],
+        extensions: ['.js', '.jsx', '.react.js'],
+        mainFields: ['browser', 'jsnext:main', 'main'],
+    }
+```
+
+### package-lock.json
+
+Consider a dependency stated as "express": "^4.16.4".
+
+The publisher of this module (without using package-lock.json) would have express version 4.16.4 installed since they installed the latest version.
+
+If express has published a new version (4.17.x) by the time I download this module and try to install dependencies on it, I can download the latest version (due to caret symbol ^ as above).
+
+The problem with the above is that if version 4.17.x contains a bug, the user who clones this project later on and exexutes the npm install command will get this buggy 4.17.x version of express which might cause the project to not work as per our expectations.
+
+The same thing could happen in the production environment, and you’d have no idea why it was failing.
+
+If as developers, we want the user to install the packages with the exact set of versions as we, the developers had, thats when the package-lock.json file comes to our rescue.
+
+This file makes sure that when we run the npm install command, the npm installs the exact version as in the package-lock.json file ignoring the package.json file. (thereby creating an exact replica of the node packages and their respective versions the developers had)
+
+### jest.config.js :-
+
+```
+collectCoverageFrom: [
+    'app/**/*.{js,jsx}',
+    '!app/**/*.test.{js,jsx}',
+    '!app/*/RbGenerated*/*.{js,jsx}',
+    '!app/app.js',
+    '!app/global-styles.js',
+    '!app/*/*/Loadable.{js,jsx}',
+  ]
+```
+This option requires collectCoverage to be set to true. collectCoverage indicates whether the coverage information should be collected while executing the test.
+collectCoverageFrom is an array of glob patterns as above, indicating a set of files for which coverage information should be collected.
+
+```
+coverageThreshold: {
+    global: {
+      statements: 98,
+      branches: 91,
+      functions: 98,
+      lines: 98,
+    },
+  }
+```
+coverageThreshold will be used to configure minimum threshold enforcement for coverage results. If thresholds aren't met, jest will fail.
+
+```
+  moduleDirectories: ['node_modules', 'app']
+```
+This is to  configure jest to find our files. Now that Jest knows how to process our files, we need to tell it how to find them. Similarly like webpack's modulesDirectories, we  have Jest's moduleDirectories options. This means that we can import files from these folders directly in our app without having to give a long absolute path for them.
+
+``` moduleNameMapper ``` allows to to stub out resources, like images or styles with a single module.
+
+``` setupFilesAfterEnv ``` ``` setupFiles ``` A list of paths to modules that run some code to configure or set up the testing framework before each test file in the suite is executed. It's also worth noting that setupFiles will execute before setupFilesAfterEnv.
+
+``` testRegex: 'tests/.*\\.test\\.js$' ``` The pattern or patterns Jest uses to detect test files.
+No wonder, it is this option that when we run the ``` npm run test ``` command, that it is automatically able to scan and detect our test files.
+
+### babel.config.js :-
+
+Browsers dont understand the new modern Javascript syntax like the Class, Promises and the 
+generator functions. Hence, to make it work, what we need to do is convert this new JS syntax to the old ES5 syntax which all browsers can understand, and this is what Babel does for us. It transpiles the new ES6 JS syntax to the old ES5 syntax.
+
+```
+presets: [
+    [
+      '@babel/preset-env',
+      {
+        modules: false,
+      },
+    ],
+    '@babel/preset-react',
+  ]
+``` 
+In Babel, a preset is a set or group of plugins used to support particular language features. This means that multiple plugins together constitute a preset. The two presets Babel uses by default:
+
+es2015: Adds support for ES2015 (or ES6) JavaScript
+react: Adds support for JSX
+
+```
+plugins: [
+    'styled-components',
+    '@babel/plugin-proposal-class-properties',
+    '@babel/plugin-syntax-dynamic-import',
+  ]
+```
+Babel is a compiler (source code => output code). Like many other compilers it runs in 3 stages: parsing, transforming, and printing.
+
+Now, out of the box Babel doesn't do anything. You will need to add plugins for Babel to do the task you want.
+Eg: We load some pages in our app only if the user needs it, that is we dynamically import them at runtime. This is a new functionality in JS and the browsers still dont support it. Hence we need to add the plugin ``` @babel/plugin-syntax-dynamic-import ``` to be able to use this functionality.
+
+```
+  env: {
+      production: {
+        only: ['app'],
+        plugins: [
+          'lodash',
+          'transform-react-remove-prop-types',
+          '@babel/plugin-transform-react-inline-elements',
+          '@babel/plugin-transform-react-constant-elements',
+        ],
+      }
+  }
+```
+``` only: ['app'] ``` This means that in production environment, we transpile files only in the app folder, and use the mentioned plugins for this environment.
+
+### .eslintrc.js :-
+
+ESLint statically analyzes your code to quickly find syntax errors and problems. ESLint is built into most text editors. Most of these syntactic errors can be fixed directly by ESLint. We can customize the default optionos in this file to preprocess our code, use custom parsers, and write our own rules.
+
+``` parser: 'babel-eslint' ``` Which parser to use to analyze our code and report errors. By default, ESLint uses Espree as its parser.
+
+``` extends: ['airbnb', 'prettier', 'prettier/react'] ``` A configuration file can extend the set of enabled rules from base configurations. Eg: Syntax error rules from these packages ``` 'airbnb', 'prettier', 'prettier/react' ``` will also be applied and if we want, we can override them in this file.
+
+``` plugins: ['prettier', 'redux-saga', 'react', 'react-hooks', 'jsx-a11y'] ``` A plugin is an npm package that usually exports rules that detect our errors.
+
+``` env ``` which environments our script is designed to run in. Each environment brings with it a certain set of predefined global variables.
+
+```
+  parserOptions: {
+      ecmaVersion: 6,
+      sourceType: 'module',
+      ecmaFeatures: {
+        jsx: true,
+      }
+  }
+```
+When using a custom parser, the parserOptions configuration property is required for ESLint to work properly with features not in ECMAScript 5 by default.
+
+``` rules ``` We define rules with the help of which we can have our basic syntax validation. Eg. how much indentation we need after an import statement, do we need a new line after all imports etc.
+
+``` settings ``` We can add settings object to ESLint configuration file and it is supplied to every rule that will be executed. 

@@ -1,5 +1,17 @@
 # React Boilerplate fully explained. Read on....
 
+##### Getting Started :
+
+To initialize the app, run the commands below :
+
+```
+$ git clone https://github.com/gaurav-patil/react-boilerplate-fully-explained.git
+$ cd react-boilerplate-fully-explained
+$ npm install
+$ npm start
+```
+Now, navaigate to [localhost:3000](http://localhost:3000) to run the app.
+
 How do you identify if a given package is a node package ? What happens when you initialise
 the repository with ``` npm init ``` ? The answer is it creates a package.json file. So this is what helps 
 us identify whether a given package is a node package.
@@ -47,7 +59,196 @@ const render = messages => {
 
 But how do we include all of your react components into this single index.html file? That's where webpack comes into the picture. webpack will literally pack your application into small javascript files. These files will be injected or included into the index.html as <script> tags.
 
-### app.js File :-
+#### First, we will go through the files in the root folder
+
+### package.json :-
+
+* This file is written in JSON format.
+
+*  ``` "name": "react-boilerplate-fully-explained" ``` The name field needs no explanation. Its our package
+name or the name we see on npm website if our package is published. It has certain rules to be followed
+like it cannot contain capital letters. Also, this name should be unique if we are publishing this package
+on NPM.
+
+*  ``` "version": "0.1.0" ``` The version field also needs no explanation. It denotes the current version of the module that the package.json file is describing. It's this version number which you see when you visit 
+a particular package on npm website or the dependency package specified with version number in the package.json file.
+
+*  ``` "description": "React boilerplate fully explained and commented" ``` This contains the human readable description of our module. This ``` description ``` property is frequently indexed by search tools like npm search and the npm CLI search tool to help find relevant packages based on a search query.
+
+*  ``` "main": "index.js" ``` The main field is a module ID that is the primary entry point to your program. That is, if your package is named foo, and a user installs it, and then does require("foo"), then your main module's exports (in this case, index.js) object will be returned.
+Also, we only need a main parameter in package.json if the entry point to our package differs from index.js in its root folder.
+
+*  ``` repository ``` If we are publishing our package on npm publicly, we usually intend to expose
+our source code. The repository field just does that.
+
+*  ``` engines ``` This specifies the minimal requirements of our module to function fully. For example,
+we need npm version installed to be above 5.0.0
+
+*  ``` browserslist ``` This tells which browsers (and their versions) we want to support. It’s referenced by Babel, Autoprefixer, and other tools, to only add the polyfills and fallbacks needed to the browsers you target. This configuration means we want to support the last 2 major versions of all browsers with at least 1% of usage (from the CanIUse.com stats), except IE8 and lower.
+
+*  ``` "license": "ISC" ``` This is a string that tells the users who use this code that under what terms 
+I am sharing my code.
+
+*  ``` bugs ``` && ``` homepage ``` Links to respective pages of our repository. These are the links which 
+we can see on out published package on the npm website.
+
+*  ``` scripts ``` As the name suggests, defines a set of node scripts that we can use. These scripts are
+command line commands that we execute on the terminal. Essentially, when we type ``` npm run prebuild ```
+in our terminal, its actually this ``` npm run build:clean ``` command which gets executed on our terminal, 
+i.e. the command defined in front of it in package.json file.
+To execute any script, we need to type ``` npm run ``` followed by the script name.
+(``` npm start``` is an exception to this though. It does not need the run keyword) 
+
+*  ``` dependencies ``` All the dependency packages we need for our app to run. They need not be only names
+as we usually see, but can be URL's as well. i.e.
+``` 
+"dependencies" : {
+  "name1" : "git://github.com/user/project.git#commit-ish", 
+  "name2" : "git://github.com/user/project.git#commit-ish"
+} 
+```
+Also, when defining the version number, we specify ``` ~1.2.3 ``` to use releases from 1.2.3 to 1.2.9
+such that it does not increment the minor version (1.3.0)
+Also, we specify ``` ~1.2.3 ``` to use releases from 1.2.3 to 1.9.9
+such that it does not increment to the major version (2.0.0)
+
+*  ``` devDependencies ``` All the development dependency packages we need for our app to run. They differ 
+from dependencies such that they are meant to be installed only in development mode, but need not go in 
+production.
+
+### package-lock.json
+
+Consider a dependency stated as "express": "^4.16.4".
+
+The publisher of this module (without using package-lock.json) would have express version 4.16.4 installed since they installed the latest version.
+
+If express has published a new version (4.17.x) by the time I download this module and try to install dependencies on it, I can download the latest version (due to caret symbol ^ as above).
+
+The problem with the above is that if version 4.17.x contains a bug, the user who clones this project later on and exexutes the npm install command will get this buggy 4.17.x version of express which might cause the project to not work as per our expectations.
+
+The same thing could happen in the production environment, and you’d have no idea why it was failing.
+
+If as developers, we want the user to install the packages with the exact set of versions as we, the developers had, thats when the package-lock.json file comes to our rescue.
+
+This file makes sure that when we run the npm install command, the npm installs the exact version as in the package-lock.json file ignoring the package.json file. (thereby creating an exact replica of the node packages and their respective versions the developers had)
+
+### jest.config.js :-
+
+```
+collectCoverageFrom: [
+  'app/**/*.{js,jsx}',
+  '!app/**/*.test.{js,jsx}',
+  '!app/*/RbGenerated*/*.{js,jsx}',
+  '!app/app.js',
+  '!app/global-styles.js',
+  '!app/*/*/Loadable.{js,jsx}',
+]
+```
+This option requires collectCoverage to be set to true. collectCoverage indicates whether the coverage information should be collected while executing the test.
+collectCoverageFrom is an array of glob patterns as above, indicating a set of files for which coverage information should be collected.
+
+```
+coverageThreshold: {
+    global: {
+      statements: 98,
+      branches: 91,
+      functions: 98,
+      lines: 98,
+    },
+  }
+```
+coverageThreshold will be used to configure minimum threshold enforcement for coverage results. If thresholds aren't met, jest will fail.
+
+```
+moduleDirectories: ['node_modules', 'app']
+```
+This is to  configure jest to find our files. Now that Jest knows how to process our files, we need to tell it how to find them. Similarly like webpack's modulesDirectories, we  have Jest's moduleDirectories options. This means that we can import files from these folders directly in our app without having to give a long absolute path for them.
+
+``` moduleNameMapper ``` allows to to stub out resources, like images or styles with a single module.
+
+``` setupFilesAfterEnv ``` ``` setupFiles ``` A list of paths to modules that run some code to configure or set up the testing framework before each test file in the suite is executed. It's also worth noting that setupFiles will execute before setupFilesAfterEnv.
+
+``` testRegex: 'tests/.*\\.test\\.js$' ``` The pattern or patterns Jest uses to detect test files.
+No wonder, it is this option that when we run the ``` npm run test ``` command, that it is automatically able to scan and detect our test files.
+
+### babel.config.js :-
+
+Browsers dont understand the new modern Javascript syntax like the Class, Promises and the 
+generator functions. Hence, to make it work, what we need to do is convert this new JS syntax to the old ES5 syntax which all browsers can understand, and this is what Babel does for us. It transpiles the new ES6 JS syntax to the old ES5 syntax.
+
+```
+presets: [
+  [
+    '@babel/preset-env',
+    {
+      modules: false,
+    },
+  ],
+  '@babel/preset-react',
+]
+``` 
+In Babel, a preset is a set or group of plugins used to support particular language features. This means that multiple plugins together constitute a preset. The two presets Babel uses by default:
+
+es2015: Adds support for ES2015 (or ES6) JavaScript
+react: Adds support for JSX
+
+```
+plugins: [
+  'styled-components',
+  '@babel/plugin-proposal-class-properties',
+  '@babel/plugin-syntax-dynamic-import',
+]
+```
+Babel is a compiler (source code => output code). Like many other compilers it runs in 3 stages: parsing, transforming, and printing.
+
+Now, out of the box Babel doesn't do anything. You will need to add plugins for Babel to do the task you want.
+Eg: We load some pages in our app only if the user needs it, that is we dynamically import them at runtime. This is a new functionality in JS and the browsers still dont support it. Hence we need to add the plugin ``` @babel/plugin-syntax-dynamic-import ``` to be able to use this functionality.
+
+```
+env: {
+  production: {
+    only: ['app'],
+    plugins: [
+      'lodash',
+      'transform-react-remove-prop-types',
+      '@babel/plugin-transform-react-inline-elements',
+      '@babel/plugin-transform-react-constant-elements',
+    ],
+  }
+}
+```
+``` only: ['app'] ``` This means that in production environment, we transpile files only in the app folder, and use the mentioned plugins for this environment.
+
+### .eslintrc.js :-
+
+ESLint statically analyzes your code to quickly find syntax errors and problems. ESLint is built into most text editors. Most of these syntactic errors can be fixed directly by ESLint. We can customize the default optionos in this file to preprocess our code, use custom parsers, and write our own rules.
+
+``` parser: 'babel-eslint' ``` Which parser to use to analyze our code and report errors. By default, ESLint uses Espree as its parser.
+
+``` extends: ['airbnb', 'prettier', 'prettier/react'] ``` A configuration file can extend the set of enabled rules from base configurations. Eg: Syntax error rules from these packages ``` 'airbnb', 'prettier', 'prettier/react' ``` will also be applied and if we want, we can override them in this file.
+
+``` plugins: ['prettier', 'redux-saga', 'react', 'react-hooks', 'jsx-a11y'] ``` A plugin is an npm package that usually exports rules that detect our errors.
+
+``` env ``` which environments our script is designed to run in. Each environment brings with it a certain set of predefined global variables.
+
+```
+parserOptions: {
+  ecmaVersion: 6,
+  sourceType: 'module',
+  ecmaFeatures: {
+    jsx: true,
+  }
+}
+```
+When using a custom parser, the parserOptions configuration property is required for ESLint to work properly with features not in ECMAScript 5 by default.
+
+``` rules ``` We define rules with the help of which we can have our basic syntax validation. Eg. how much indentation we need after an import statement, do we need a new line after all imports etc.
+
+``` settings ``` We can add settings object to ESLint configuration file and it is supplied to every rule that will be executed. 
+
+#### Now, we will go through the files in the app folder
+
+### app.js :-
 
 The app.js file is one of the most important files of the boilerplate and contains all the global setup
 which eventually helps us rendering our application. Lets see what it is!
@@ -106,7 +307,7 @@ if (!window.Intl) {
 }
 ```
 
-### congifureStore.js File :-
+### congifureStore.js :-
 
 The Redux store is the heart of our application. We create and configure this redux store in this file.
 
@@ -136,62 +337,111 @@ We use reselect so that we can slice our redux state and only provide the necess
 
 * **Composability**: You can combine multiple selectors. For example, one selector can filter names according to a search key and another selector can filter the already filtered names according to gender. One more selector can further filter according to age. You combine these selectors by using createSelector()
 
-
-
-#### package.json :-
-
-* This file is written in JSON format.
-
-*  ``` "name": "react-boilerplate-fully-explained" ``` The name field needs no explanation. Its our package
-name or the name we see on npm website if our package is published. It has certain rules to be followed
-like it cannot contain capital letters. Also, this name should be unique if we are publishing this package
-on NPM.
-
-*  ``` "version": "0.1.0" ``` The version field also needs no explanation. It denotes the current version of the module that the package.json file is describing. It's this version number which you see when you visit 
-a particular package on npm website or the dependency package specified with version number in the package.json file.
-
-*  ``` "description": "React boilerplate fully explained and commented" ``` This contains the human readable description of our module. This ``` description ``` property is frequently indexed by search tools like npm search and the npm CLI search tool to help find relevant packages based on a search query.
-
-*  ``` "main": "index.js" ``` The main field is a module ID that is the primary entry point to your program. That is, if your package is named foo, and a user installs it, and then does require("foo"), then your main module's exports (in this case, index.js) object will be returned.
-Also, we only need a main parameter in package.json if the entry point to our package differs from index.js in its root folder.
-
-*  ``` repository ``` If we are publishing our package on npm publicly, we usually intend to expose
-our source code. The repository field just does that.
-
-*  ``` engines ``` This specifies the minimal requirements of our module to function fully. For example,
-we need npm version installed to be above 5.0.0
-
-*  ``` browserslist ``` This tells which browsers (and their versions) we want to support. It’s referenced by Babel, Autoprefixer, and other tools, to only add the polyfills and fallbacks needed to the browsers you target. This configuration means we want to support the last 2 major versions of all browsers with at least 1% of usage (from the CanIUse.com stats), except IE8 and lower.
-
-*  ``` "license": "ISC" ``` This is a string that tells the users who use this code that under what terms 
-I am sharing my code.
-
-*  ``` bugs ``` && ``` homepage ``` Links to respective pages of our repository. These are the links which 
-we can see on out published package on the npm website.
-
-*  ``` scripts ``` As the name suggests, defines a set of node scripts that we can use. These scripts are
-command line commands that we execute on the terminal. Essentially, when we type ``` npm run prebuild ```
-in our terminal, its actually this ``` npm run build:clean ``` command which gets executed on our terminal, 
-i.e. the command defined in front of it in package.json file.
-To execute any script, we need to type ``` npm run ``` followed by the script name.
-(``` npm start``` is an exception to this though. It does not need the run keyword) 
-
-*  ``` dependencies ``` All the dependency packages we need for our app to run. They need not be only names
-as we usually see, but can be URL's as well. i.e.
-``` 
-"dependencies" : {
-  "name1" : "git://github.com/user/project.git#commit-ish", 
-  "name2" : "git://github.com/user/project.git#commit-ish"
-} 
+A typical selector in any component looks like this :-
 ```
-Also, when defining the version number, we specify ``` ~1.2.3 ``` to use releases from 1.2.3 to 1.2.9
-such that it does not increment the minor version (1.3.0)
-Also, we specify ``` ~1.2.3 ``` to use releases from 1.2.3 to 1.9.9
-such that it does not increment to the major version (2.0.0)
+const selectRouter = globalStore => globalStore.router;
 
-*  ``` devDependencies ``` All the development dependency packages we need for our app to run. They differ 
-from dependencies such that they are meant to be installed only in development mode, but need not go in 
-production.
+const makeSelectLocation = () =>
+  createSelector(
+    selectRouter,
+    routerState => routerState.location,
+  );
+```
+This means, first we pull the ``` router ``` object from our redux store and then from that, we pull ``` routerState.location ``` which is then passes as ``` makeSelectLocation ``` props to our component.
+
+### reducers.js :-
+
+```
+export default function createReducer(injectedReducers = {}) {
+  const rootReducer = combineReducers({
+    language: languageProviderReducer,
+    router: connectRouter(history),
+    ...injectedReducers,
+  });
+}
+```
+We usually write one reducer per component. But to form a single source of truth or store as we call it,
+we combine all the reducers here into 1 single store with the combineReducers function.
+You can have global reducers injected directly here as you can see above (means these should be available at any point of the app no matter what), we directly inject language and router reducers.
+
+### .httaccess :-
+This boilerplate includes an `app/.htaccess` file that does three things:
+
+1.  Redirect all traffic to HTTPS because ServiceWorker only works for encrypted
+    traffic.
+2.  Rewrite all pages (e.g. `yourdomain.com/subpage`) to `yourdomain.com/index.html`
+    to let `react-router` take care of presenting the correct page.
+
+### .nginx.conf :-
+
+An `app/.nginx.conf` file is included that does the same as mentioned above but on an Nginx server.
+
+#### Now, we will go through the files in the app/utils folder
+
+### history.js :-
+A `history` object is created, which remembers all the browsing history for your app. This is used by the ConnectedRouter to know which pages your users visit. Extremely helpful if we want to perform some analytics on pages our user keeps visiting frequently. There should be only one history object for our entire app, and hence we create that object in separate file meant only for it and then import it in our project whenever we need it, thus avoiding if create it multiple times by mistake in separate files.
+
+### loadable.js :-
+This is a higher order component that helps us display a loader animation or some loading text till the component files and its assets are getting downloaded from the server.
+
+### injectReducer.js && reducerInjectors.js :-
+As discussed earlier, we usually write one reducer per component. So, we have a HOC function in injectReducer.js which returns us a wrapped component, which injects the reducer in the global store as soon as the component is mounted.
+The reducerInjectors.js file actually provides us with the injector function which the injectReducer.js file uses to inject the reducer in the global store.
+```
+constructor(props, context) {
+  super(props, context);
+
+  getInjectors(context.store).injectReducer(key, reducer);
+}
+```
+The injectReducer.js also provides us with useInjectReducer function which we use in our component to inject the component's reducer into the global store as below.
+```
+useInjectReducer({ 
+  key: 'ComponentName', 
+  reducer: ComponentReducer
+})
+```
+The key should be unique throughout the app i.e. no component can inject reducer with 2 same keys.
+
+### injectSaga.js && sagaInjectors.js :-
+We write multiple sagas in a component i.e. one saga per API call. Similarly like reducers, 
+we have a HOC function in injectSaga.js which returns us a wrapped component, which injects the sagas in the global store as soon as the component is mounted and most importantly, it also ejects the sagas from the global store when the component is unmounted.
+We eject these sagas from the global store because we assume that once the component is unmounted, we wont be firing the API calls (sagas) of that component.
+However, you can configure this behavior with the following 3 'modes' as you can see in sagaInjectors.js :-
+
+* 'DAEMON' mode injects the saga when the component is mounted but never ejects or cancels it. This is the default mode we have assumed in sagaInjectors.js file as you can see below. This means that if we explicitly dont specify the mode, DAEMON mode will be the default behavior.
+``` mode: descriptor.mode || DAEMON ```
+
+* 'RESTART_ON_REMOUNT' mode injects the saga when the component is mounted and ejects it when the component is unmounted. This improves the performance of our app. This is because when we dispatch a redux action from our component to fetch some data from the server, we go through all the keys of the sagas which are meant for this particular redux action. Hence if we keep ejecting these sagas when the component is no more,we will have less sagas to traverse through thereby increasing the performance of our app.
+
+* 'ONCE_TILL_UNMOUNT' is when we want to run that saga or fire that respective API call only once during the component lifecycle.
+ 
+The sagaInjectors.js file actually provides us with the injector function which the injectSaga.js file uses to inject the sagas in the global store.
+```
+constructor(props, context) {
+  super(props, context);
+
+  this.injectors = getInjectors(context.store);
+
+  this.injectors.injectSaga(key, { saga, mode }, this.props);
+}
+```
+The injectSaga.js also provides us with useInjectSaga function which we use in our component to inject the component's saga's into the global store as below. You need to call useInjectSaga function per API call you wish to do like this :
+```
+useInjectSaga({ 
+  key: 'SagaName1', 
+  saga: Saga1
+});
+useInjectSaga({ 
+  key: 'SagaName2', 
+  saga: Saga2
+})
+```
+If you have a lot of API calls to be made to the server, you can write a function in injectSaga.js file which accepts an array of sagas, then loops through all these sagas and injects them rather than to write the useInjectSaga function for each API call as we have written above.
+
+Also, the key should be unique throughout the component and also throughout the app i.e. no saga in an entire app can have 2 same keys.
+
+#### Now, we will go through the files in the internals folder. This folder mostly consists of webpack configuration.
 
 ### Webpack :- 
 
@@ -200,6 +450,8 @@ stored in the webpack.base.babel.js file. You can override this configuration in
 the webpack.prod.babel.js file for the respective environments.
 
 What problem does the webpack solve ? This question always intrigues us. The answer is Webpack is a module bundler. It means, that its purpose is to merge a group of modules (with their dependencies). The output might be one, or more files. Aside from bundling modules, webpack can do all sorts of things with your files: for example transpile scss to css, or typescript to javascript. It can even compress all of your image files! 
+
+Please refer the webpack.base.babel.js, webpack.dev.babel.js & webpack.prod.babel.js for the code snippets going forward.
 
 #### Mode :-
 The mode is a parameter that Webpack 4 introduced. The configuration requires specifying it ever since. Not doing it will cause a warning and its value will fall back to the default value, which is production. If you use  mode: "production", Webpack will set some configuration for you. As a result, your output code will better fit the production.
@@ -260,7 +512,7 @@ The file will be interpreted by the css-loader
 The result of the css-loader will be passed to the style-loader
 Finally, the style-loader will return a JavaScript code
 
-### Common Webpack Loaders :-
+#### Common Webpack Loaders :-
 
 **css-loader** : The css-loader interprets imported css files and resolves them.
 ``` import css from 'file.css'; ```
@@ -302,7 +554,7 @@ The most basic way to use plugins is to put them in the plugins property of our 
 
 You may wonder why do we need to use the new keyword to instantiate a plugin. This is due to the fact that we can use the same plugin on different sets of files.
 
-### Common Webpack Plugins :-
+#### Common Webpack Plugins :-
 
 **HtmlWebpackPlugin** :- 
 Manually adding all JavaScripts file to your HTML can be cumbersome. Thankfully, you don’t need to do that! HtmlWebpackPlugin does that for you.
@@ -457,141 +709,12 @@ resolve: {
 }
 ```
 
-### package-lock.json
+#### Now, we will go through the files in the server folder.
 
-Consider a dependency stated as "express": "^4.16.4".
-
-The publisher of this module (without using package-lock.json) would have express version 4.16.4 installed since they installed the latest version.
-
-If express has published a new version (4.17.x) by the time I download this module and try to install dependencies on it, I can download the latest version (due to caret symbol ^ as above).
-
-The problem with the above is that if version 4.17.x contains a bug, the user who clones this project later on and exexutes the npm install command will get this buggy 4.17.x version of express which might cause the project to not work as per our expectations.
-
-The same thing could happen in the production environment, and you’d have no idea why it was failing.
-
-If as developers, we want the user to install the packages with the exact set of versions as we, the developers had, thats when the package-lock.json file comes to our rescue.
-
-This file makes sure that when we run the npm install command, the npm installs the exact version as in the package-lock.json file ignoring the package.json file. (thereby creating an exact replica of the node packages and their respective versions the developers had)
-
-### jest.config.js :-
-
-```
-collectCoverageFrom: [
-  'app/**/*.{js,jsx}',
-  '!app/**/*.test.{js,jsx}',
-  '!app/*/RbGenerated*/*.{js,jsx}',
-  '!app/app.js',
-  '!app/global-styles.js',
-  '!app/*/*/Loadable.{js,jsx}',
-]
-```
-This option requires collectCoverage to be set to true. collectCoverage indicates whether the coverage information should be collected while executing the test.
-collectCoverageFrom is an array of glob patterns as above, indicating a set of files for which coverage information should be collected.
-
-```
-coverageThreshold: {
-    global: {
-      statements: 98,
-      branches: 91,
-      functions: 98,
-      lines: 98,
-    },
-  }
-```
-coverageThreshold will be used to configure minimum threshold enforcement for coverage results. If thresholds aren't met, jest will fail.
-
-```
-moduleDirectories: ['node_modules', 'app']
-```
-This is to  configure jest to find our files. Now that Jest knows how to process our files, we need to tell it how to find them. Similarly like webpack's modulesDirectories, we  have Jest's moduleDirectories options. This means that we can import files from these folders directly in our app without having to give a long absolute path for them.
-
-``` moduleNameMapper ``` allows to to stub out resources, like images or styles with a single module.
-
-``` setupFilesAfterEnv ``` ``` setupFiles ``` A list of paths to modules that run some code to configure or set up the testing framework before each test file in the suite is executed. It's also worth noting that setupFiles will execute before setupFilesAfterEnv.
-
-``` testRegex: 'tests/.*\\.test\\.js$' ``` The pattern or patterns Jest uses to detect test files.
-No wonder, it is this option that when we run the ``` npm run test ``` command, that it is automatically able to scan and detect our test files.
-
-### babel.config.js :-
-
-Browsers dont understand the new modern Javascript syntax like the Class, Promises and the 
-generator functions. Hence, to make it work, what we need to do is convert this new JS syntax to the old ES5 syntax which all browsers can understand, and this is what Babel does for us. It transpiles the new ES6 JS syntax to the old ES5 syntax.
-
-```
-presets: [
-  [
-    '@babel/preset-env',
-    {
-      modules: false,
-    },
-  ],
-  '@babel/preset-react',
-]
-``` 
-In Babel, a preset is a set or group of plugins used to support particular language features. This means that multiple plugins together constitute a preset. The two presets Babel uses by default:
-
-es2015: Adds support for ES2015 (or ES6) JavaScript
-react: Adds support for JSX
-
-```
-plugins: [
-  'styled-components',
-  '@babel/plugin-proposal-class-properties',
-  '@babel/plugin-syntax-dynamic-import',
-]
-```
-Babel is a compiler (source code => output code). Like many other compilers it runs in 3 stages: parsing, transforming, and printing.
-
-Now, out of the box Babel doesn't do anything. You will need to add plugins for Babel to do the task you want.
-Eg: We load some pages in our app only if the user needs it, that is we dynamically import them at runtime. This is a new functionality in JS and the browsers still dont support it. Hence we need to add the plugin ``` @babel/plugin-syntax-dynamic-import ``` to be able to use this functionality.
-
-```
-env: {
-  production: {
-    only: ['app'],
-    plugins: [
-      'lodash',
-      'transform-react-remove-prop-types',
-      '@babel/plugin-transform-react-inline-elements',
-      '@babel/plugin-transform-react-constant-elements',
-    ],
-  }
-}
-```
-``` only: ['app'] ``` This means that in production environment, we transpile files only in the app folder, and use the mentioned plugins for this environment.
-
-### .eslintrc.js :-
-
-ESLint statically analyzes your code to quickly find syntax errors and problems. ESLint is built into most text editors. Most of these syntactic errors can be fixed directly by ESLint. We can customize the default optionos in this file to preprocess our code, use custom parsers, and write our own rules.
-
-``` parser: 'babel-eslint' ``` Which parser to use to analyze our code and report errors. By default, ESLint uses Espree as its parser.
-
-``` extends: ['airbnb', 'prettier', 'prettier/react'] ``` A configuration file can extend the set of enabled rules from base configurations. Eg: Syntax error rules from these packages ``` 'airbnb', 'prettier', 'prettier/react' ``` will also be applied and if we want, we can override them in this file.
-
-``` plugins: ['prettier', 'redux-saga', 'react', 'react-hooks', 'jsx-a11y'] ``` A plugin is an npm package that usually exports rules that detect our errors.
-
-``` env ``` which environments our script is designed to run in. Each environment brings with it a certain set of predefined global variables.
-
-```
-parserOptions: {
-    ecmaVersion: 6,
-    sourceType: 'module',
-    ecmaFeatures: {
-      jsx: true,
-    }
-}
-```
-When using a custom parser, the parserOptions configuration property is required for ESLint to work properly with features not in ECMAScript 5 by default.
-
-``` rules ``` We define rules with the help of which we can have our basic syntax validation. Eg. how much indentation we need after an import statement, do we need a new line after all imports etc.
-
-``` settings ``` We can add settings object to ESLint configuration file and it is supplied to every rule that will be executed. 
-
-### Server Folder :-
 As discussed earlier, the server folder contains all the development server and the production server related configuration files.
 
 This contains a middleware folder which in turn contains the development and production middlewares.
-But what exactly is middleware ? 
+But what exactly is a middleware ? 
 
 Say you’re running a web application on a web server with Node.js and Express. In this application, let’s say certain pages require that you log in.
 When the web server receives a request for data, Express (Node Server) gives us a request object with information about the user and the data they are requesting. We can see their IP address, what language their browser is set to, what url they are requesting, and if any parameters they have passed along. Express (Node Server) also gives us access to a response object that we can modify before the web server sends this response to the user. These objects are usually denoted as req, res.
@@ -606,98 +729,6 @@ The index.js is the main file here which contains all the configuration. It is f
 
 We might want to log errors which occur on our server when the users make requests, and we might prefer to keep logging these errors may be to some file, so that later on we can rectify them.
 
-### .httaccess :-
-This boilerplate includes an `app/.htaccess` file that does three things:
+That's pretty much of it.
 
-1.  Redirect all traffic to HTTPS because ServiceWorker only works for encrypted
-    traffic.
-2.  Rewrite all pages (e.g. `yourdomain.com/subpage`) to `yourdomain.com/index.html`
-    to let `react-router` take care of presenting the correct page.
-
-### .nginx.conf :-
-
-An `app/.nginx.conf` file is included that does the same as mentioned above but on an Nginx server.
-
-### reducers.js :-
-
-```
-export default function createReducer(injectedReducers = {}) {
-  const rootReducer = combineReducers({
-    language: languageProviderReducer,
-    router: connectRouter(history),
-    ...injectedReducers,
-  });
-}
-```
-We usually write one reducer per component. But to form a single source of truth or store as we call it,
-we combine all the reducers here into 1 single store with the combineReducers function.
-You can have global reducers injected directly here as you can see above (means these should be available at any point of the app no matter what), we directly inject language and router reducers.
-
-### configureStore.js :-
-The above combineReducers function is called from this file to create a single source of truth or store.
-
-
-## Utils Folder :-
-
-### history.js :-
-A `history` object is created, which remembers all the browsing history for your app. This is used by the ConnectedRouter to know which pages your users visit. Extremely helpful if we want to perform some analytics on pages our user keeps visiting frequently. There should be only one history object for our entire app, and hence we create that object in separate file meant only for it and then import it in our project whenever we need it, thus avoiding if create it multiple times by mistake in separate files.
-
-### loadable.js :-
-This is a higher order component that helps us display a loader animation or some loading text till the component files and its assets are getting downloaded from the server.
-
-### injectReducer.js && reducerInjectors.js :-
-As discussed earlier, we usually write one reducer per component. So, we have a HOC function in injectReducer.js which returns us a wrapped component, which injects the reducer in the global store as soon as the component is mounted.
-The reducerInjectors.js file actually provides us with the injector function which the injectReducer.js file uses to inject the reducer in the global store.
-```
-constructor(props, context) {
-  super(props, context);
-
-  getInjectors(context.store).injectReducer(key, reducer);
-}
-```
-The injectReducer.js also provides us with useInjectReducer function which we use in our component to inject the component's reducer into the global store as below.
-```
-useInjectReducer({ 
-  key: 'ComponentName', 
-  reducer: ComponentReducer
-})
-```
-The key should be unique throughout the app i.e. no component can inject reducer with 2 same keys.
-
-### injectSaga.js && sagaInjectors.js :-
-We write multiple sagas in a component i.e. one saga per API call. Similarly like reducers, 
-we have a HOC function in injectSaga.js which returns us a wrapped component, which injects the sagas in the global store as soon as the component is mounted and most importantly, it also ejects the sagas from the global store when the component is unmounted.
-We eject these sagas from the global store because we assume that once the component is unmounted, we wont be firing the API calls (sagas) of that component.
-However, you can configure this behavior with the following 3 'modes' as you can see in sagaInjectors.js :-
-
-* 'DAEMON' mode injects the saga when the component is mounted but never ejects or cancels it. This is the default mode we have assumed in sagaInjectors.js file as you can see below. This means that if we explicitly dont specify the mode, DAEMON mode will be the default behavior.
-``` mode: descriptor.mode || DAEMON ```
-
-* 'RESTART_ON_REMOUNT' mode injects the saga when the component is mounted and ejects it when the component is unmounted. This improves the performance of our app. This is because when we dispatch a redux action from our component to fetch some data from the server, we go through all the keys of the sagas which are meant for this particular redux action. Hence if we keep ejecting these sagas when the component is no more,we will have less sagas to traverse through thereby increasing the performance of our app.
-
-* 'ONCE_TILL_UNMOUNT' is when we want to run that saga or fire that respective API call only once during the component lifecycle.
- 
-The sagaInjectors.js file actually provides us with the injector function which the injectSaga.js file uses to inject the sagas in the global store.
-```
-constructor(props, context) {
-  super(props, context);
-
-  this.injectors = getInjectors(context.store);
-
-  this.injectors.injectSaga(key, { saga, mode }, this.props);
-}
-```
-The injectSaga.js also provides us with useInjectSaga function which we use in our component to inject the component's saga's into the global store as below. You need to call useInjectSaga function per API call you wish to do like this :
-```
-useInjectSaga({ 
-  key: 'SagaName1', 
-  saga: Saga1
-});
-useInjectSaga({ 
-  key: 'SagaName2', 
-  saga: Saga2
-})
-```
-If you have a lot of API calls to be made to the server, you can write a function in injectSaga.js file which accepts an array of sagas, then loops through all these sagas and injects them rather than to write the useInjectSaga function for each API call as we have written above.
-
-Also, the key should be unique throughout the component and also throughout the app i.e. no saga in an entire app can have 2 same kays.
+I hope now you now have atleast the basic idea of how the entire Reatct codebase functions and how we can influence it with various configuration options which we discussed !!!

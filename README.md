@@ -1,29 +1,32 @@
-## React Boilerplate fully explained. Read on....
+# React Boilerplate fully explained. Read on....
 
-How do you identify if a package is a node package ? What happens when you initialise
-the repository with "npm init" ? The answer is it creates a package.json file. So this is what helps 
+How do you identify if a given package is a node package ? What happens when you initialise
+the repository with ``` npm init ``` ? The answer is it creates a package.json file. So this is what helps 
 us identify whether a given package is a node package.
 
-#### Typical folder structure of any React Boilerplate :-
+## Typical folder structure of any React Boilerplate :-
 
-The 3 folders which we see in almost any React code is the app, internals and the server folder.
-The app folder contains all the front end logic and configuration related to our React code and this
+The 3 folders which we see in almost every React codebase is the app, internals and the server folder.
+
+* The app folder contains all the front end logic and configuration related to our React code and this
 is the folder where you are going to spend almost 99% of your time.
-The server folder contains all the development server and the production server related configuration
+
+* The server folder contains all the development server and the production server related configuration
 files.
-The internals folder contains the most important webpack configuration (the main engine of our app) as well as the scripts which we use use in the scripts tag in our package.json file.
 
-### How does the app start running ?
+* The internals folder contains the most important webpack configuration (the main engine of our app) as well as the scripts which we use use in the scripts tag in our package.json file.
 
-As we all know, we start our app by running ``` npm start ``` command.
-What this does is, it executes the file which is defined as the 'entry point' in our webpack.dev.babel.js or
+## How does the app start running ?
+
+As we all know, we start our app by executing the ``` npm start ``` command.
+What this does is, it executes the file which is defined as an 'entry point' in our webpack.dev.babel.js or
 webpack.prod.babel.js file in the internals folder. i.e.
 ```
 entry: [
     require.resolve('react-app-polyfill/ie11'),
     'webpack-hot-middleware/client?reload=true',
     path.join(process.cwd(), 'app/app.js'), // Start with js/app.js
-  ]
+]
 ```
 
 This app.js file in turn renders the app/index.html in the browser with the help of the following code in it.
@@ -49,15 +52,15 @@ But how do we include all of your react components into this single index.html f
 The app.js file is one of the most important files of the boilerplate and contains all the global setup
 which eventually helps us rendering our application. Lets see what it is!
 
-- `@babel/polyfill` is imported first. This enables our app to have some cool stuff like ES6 generator functions, `Promise`s, etc.
+* `@babel/polyfill` is imported first. This enables our app to have some cool stuff like ES6 generator functions, `Promise`s, etc.
 
-- A `history` object is created, which remembers all the browsing history for your app. This is used by the ConnectedRouter to know which pages your users visit.
+* A `history` object is created, which remembers all the browsing history for your app. This is used by the ConnectedRouter to know which pages your users visit.
 ``` import history from 'utils/history'; ```
 
-- A redux `store` is instantiated.
+* A redux `store` is instantiated.
 ``` const store = configureStore(initialState, history); ```
 
-- `ReactDOM.render()` not only renders the root react component called `<App />`, of our application, but it renders it with `<Provider />`, `<LanguageProvider />` and `<ConnectedRouter />`.
+* `ReactDOM.render()` not only renders the root react component called `<App />`, of our application, but it renders it with `<Provider />`, `<LanguageProvider />` and `<ConnectedRouter />`.
 ```
 const render = messages => {
   ReactDOM.render(
@@ -77,7 +80,7 @@ const render = messages => {
 
 * `<LanguageProvider />` provides language translation support to your app.
 
-- Hot module replacement is set up with Webpack HMR that makes all the reducers, injected sagas, components, containers, and i18n messages hot reloadable.
+* Hot module replacement is set up with Webpack HMR that makes all the reducers, injected sagas, components, containers, and i18n messages hot reloadable.
 ```
 if (module.hot) {
   module.hot.accept(['./i18n', 'containers/App'], () => {
@@ -127,11 +130,11 @@ Note: the history object provided to router reducer, routerMiddleware, and Conne
 
 We use reselect so that we can slice our redux state and only provide the necessay(sliced) part of the entire state to our respective react component. It has 3 features :- 
 
-Computation: If we have to perform some filtering or any other operation, the reselect will help us filter the original array and return only filtered data. We do not have to store a separate array of filtered data.
+* **Computation**: If we have to perform some filtering or any other operation, the reselect will help us filter the original array and return only filtered data. We do not have to store a separate array of filtered data.
 
-Memoization: A selector will not compute a new result unless one of its arguments change. That means, if we are filtering data with some search key on a set of names, we have performed that search once and if we decide to repeat the same search once again for the 2nd time, reselect will not filter the names over and over. It will just return the previously computed names, and subsequently cached, result. Reselect compares the old and the new arguments and then decides whether to compute again or return the cached result.
+* **Memoization**: A selector will not compute a new result unless one of its arguments change. That means, if we are filtering data with some search key on a set of names, we have performed that search once and if we decide to repeat the same search once again for the 2nd time, reselect will not filter the names over and over. It will just return the previously computed names, and subsequently cached, result. Reselect compares the old and the new arguments and then decides whether to compute again or return the cached result.
 
-Composability: You can combine multiple selectors. For example, one selector can filter names according to a search key and another selector can filter the already filtered names according to gender. One more selector can further filter according to age. You combine these selectors by using createSelector()
+* **Composability**: You can combine multiple selectors. For example, one selector can filter names according to a search key and another selector can filter the already filtered names according to gender. One more selector can further filter according to age. You combine these selectors by using createSelector()
 
 
 
@@ -150,7 +153,6 @@ a particular package on npm website or the dependency package specified with ver
 *  ``` "description": "React boilerplate fully explained and commented" ``` This contains the human readable description of our module. This ``` description ``` property is frequently indexed by search tools like npm search and the npm CLI search tool to help find relevant packages based on a search query.
 
 *  ``` "main": "index.js" ``` The main field is a module ID that is the primary entry point to your program. That is, if your package is named foo, and a user installs it, and then does require("foo"), then your main module's exports (in this case, index.js) object will be returned.
-
 Also, we only need a main parameter in package.json if the entry point to our package differs from index.js in its root folder.
 
 *  ``` repository ``` If we are publishing our package on npm publicly, we usually intend to expose
@@ -177,10 +179,10 @@ To execute any script, we need to type ``` npm run ``` followed by the script na
 *  ``` dependencies ``` All the dependency packages we need for our app to run. They need not be only names
 as we usually see, but can be URL's as well. i.e.
 ``` 
-	"dependencies" : {
-		"name1" : "git://github.com/user/project.git#commit-ish", 
-		"name2" : "git://github.com/user/project.git#commit-ish"
-	} 
+"dependencies" : {
+  "name1" : "git://github.com/user/project.git#commit-ish", 
+  "name2" : "git://github.com/user/project.git#commit-ish"
+} 
 ```
 Also, when defining the version number, we specify ``` ~1.2.3 ``` to use releases from 1.2.3 to 1.2.9
 such that it does not increment the minor version (1.3.0)
@@ -212,7 +214,7 @@ This is from where our app usually boots up as mentioned earlier.
 entry: [
     require.resolve('react-app-polyfill/ie11'),
     path.join(process.cwd(), 'app/app.js'),
-  ]
+]
 ```
 It means that webpack will go to the 'app/app.js' file and start the bundling from that. If you use any imports in the app.js file, webpack will in turn handle them.
 
@@ -225,7 +227,7 @@ The output is a configuration of where webpack should output your bundle. It def
 output: {
     filename: '[name].[chunkhash].js',
     chunkFilename: '[name].[chunkhash].chunk.js',
-  }
+}
 ```
 
 #### Loaders :-
@@ -234,11 +236,11 @@ We define the loaders in the module.rules property in our webpack configuration.
 The property rules is an array of all of your loaders.
 For eg :- 
 ```
-    {
-        test: /\.css$/,
-        exclude: /node_modules/,
-        use: ['style-loader', 'css-loader'],
-    }
+{
+    test: /\.css$/,
+    exclude: /node_modules/,
+    use: ['style-loader', 'css-loader'],
+}
 ```
 These rules will be applied to every file, that matches the test property of the rule. This is, in fact, a regular expression.
 For eg. in the above code, it will consider all the css files in our project.
@@ -258,26 +260,22 @@ The file will be interpreted by the css-loader
 The result of the css-loader will be passed to the style-loader
 Finally, the style-loader will return a JavaScript code
 
-Common Webpack Loaders :-
+### Common Webpack Loaders :-
 
-css-loader => The css-loader interprets imported css files and resolves them.
+**css-loader** : The css-loader interprets imported css files and resolves them.
 ``` import css from 'file.css'; ```
 
-style-loader => Inject CSS into the DOM i.e. puts the css from the .css files into the <style> tags in HTML.
+**style-loader** : Inject CSS into the DOM i.e. puts the css from the .css files into the <style> tags in HTML.
 
-babel-loader => Browsers dont understand the new modern Javascript syntax like the Class, Promises and the 
-generator functions. Hence, to make it work, what we need to do is convert this new JS syntax to the old 
-ES5 syntax which all browsers can understand, and this is what Babel does for us. It transpiles the new ES6 JS syntax to the old ES5 syntax.
+**babel-loader** : Browsers dont understand the new modern Javascript syntax like the Class, Promises and the generator functions. Hence, to make it work, what we need to do is convert this new JS syntax to the old ES5 syntax which all browsers can understand, and this is what Babel does for us. It transpiles the new ES6 JS syntax to the old ES5 syntax.
 
-file-loader => Apart from javascript, the browsers dont understand anything. Hence to deal with files other than .js, we need a mechanism which puts these files in our output directory and then gives us a path to that file (public uri) through which we can use that file in our project. 
+**file-loader** : Apart from javascript, the browsers dont understand anything. Hence to deal with files other than .js, we need a mechanism which puts these files in our output directory and then gives us a path to that file (public uri) through which we can use that file in our project. 
 ``` import img from './file.png'; ```
 This will emit file.png as a file in the output directory (with the specified naming convention, if options are specified to do so) and returns the public URI of the file.
 
-url-loader => The url-loader will transform your images into base64 URIs. If your images are very small, it might be better for your performance to include them straight into your code as data matrix form. Hence we wont need to import them explicitly at the top of our code and will cause your browser to make fewer requests.
+**url-loader** : The url-loader will transform your images into base64 URIs. If your images are very small, it might be better for your performance to include them straight into your code as data matrix form. Hence we wont need to import them explicitly at the top of our code and will cause your browser to make fewer requests.
 
-If you specify your images in the `.html` files using the `<img>` tag, everything
-will work fine. The problem comes up if you try to include images using anything
-except that tag, like meta tags:
+If you specify your images in the `.html` files using the `<img>` tag, everything will work fine. The problem comes up if you try to include images using anything except that tag, like meta tags:
 
 ```HTML
 <meta property="og:image" content="img/yourimg.png" />
@@ -293,7 +291,7 @@ import 'file?name=[name].[ext]!../img/yourimg.png';
 
 Then webpack will correctly transfer the image to the build folder.
 
-html-loader => Exports HTML as string. You can parse the URL's in the HTML, optimize and minimize the HTML.
+**html-loader** : Exports HTML as string. You can parse the URL's in the HTML, optimize and minimize the HTML.
 
 
 ### Plugins :- 
@@ -304,42 +302,42 @@ The most basic way to use plugins is to put them in the plugins property of our 
 
 You may wonder why do we need to use the new keyword to instantiate a plugin. This is due to the fact that we can use the same plugin on different sets of files.
 
-Common Webpack Plugins :-
+### Common Webpack Plugins :-
 
-HtmlWebpackPlugin :- 
+**HtmlWebpackPlugin** :- 
 Manually adding all JavaScripts file to your HTML can be cumbersome. Thankfully, you don’t need to do that! HtmlWebpackPlugin does that for you.
 
 ```
-    new HtmlWebpackPlugin({
-      template: 'app/index.html',
-      minify: {
-        removeComments: true,
-        collapseWhitespace: true,
-        removeRedundantAttributes: true,
-        useShortDoctype: true,
-        removeEmptyAttributes: true,
-        removeStyleLinkTypeAttributes: true,
-        keepClosingSlash: true,
-        minifyJS: true,
-        minifyCSS: true,
-        minifyURLs: true,
-      },
-      inject: true,
-    })
+new HtmlWebpackPlugin({
+  template: 'app/index.html',
+  minify: {
+    removeComments: true,
+    collapseWhitespace: true,
+    removeRedundantAttributes: true,
+    useShortDoctype: true,
+    removeEmptyAttributes: true,
+    removeStyleLinkTypeAttributes: true,
+    keepClosingSlash: true,
+    minifyJS: true,
+    minifyCSS: true,
+    minifyURLs: true,
+  },
+  inject: true,
+})
 ```
 It will create the index.html file for us and drop it in the dist directory. Our output JavaScript code will be injected at the end of the  <body> tag like this, because we have set ``` inject: true ``` in the above code.
 
 
 ```
-    <html>
-        <head>
-            <meta charset="UTF-8">
-            <title>Webpack App</title>
-        </head>
-        <body>
-            <script type="text/javascript" src="main.js"></script>
-        </body>
-    </html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Webpack App</title>
+    </head>
+    <body>
+        <script type="text/javascript" src="main.js"></script>
+    </body>
+</html>
 ```
 It will come in handy especially when the number of your files will grow since you would have to keep track of them and add all of them to the HTML file.
 
@@ -350,23 +348,23 @@ What are hashes ? It is a chunk-specific hash that will be generated based on th
 Also, as you can see, there are many options which you can pass to this HtmlWebpackPlugin for it to work
 the way you want it to be. We have passed many options to minify property so that we reduce the size of our HTML files in turn helping us to download these files faster.
 
-OfflinePlugin :- 
+**OfflinePlugin** :- 
 This plugin is intended to provide an offline experience for webpack projects. It uses ServiceWorker, and AppCache as a fallback under the hood. Simply include this plugin in your webpack.config, and the accompanying runtime in your client script, and your project will become offline ready by caching all (or some) of the webpack output assets.
 
-CompressionPlugin :-
+**CompressionPlugin** :-
 Prepare compressed versions of assets for the said files in the ``` test ``` property to serve them with Content-Encoding.
 
-WebpackPwaManifest Plugin :-
+**WebpackPwaManifest Plugin** :-
 This is a webpack plugin that generates a 'manifest.json' for your Progressive Web Application, with auto icon resizing and fingerprinting support.
 
-HashedModuleIdsPlugin :-
+**HashedModuleIdsPlugin** :-
 This plugin will cause the chunk hashes which we talked about earlier to be based on the relative path of the module, generating a four character string as the module id. Usually this is for use in production.
 
-EnvironmentPlugin :- 
+**EnvironmentPlugin** :- 
 The EnvironmentPlugin is shorthand for using the DefinePlugin on process.env keys like this :
 ``` new webpack.EnvironmentPlugin(['NODE_ENV', 'DEBUG']) ```
 
-HotModuleReplacementPlugin :-
+**HotModuleReplacementPlugin** :-
 Hot Module Replacement (HMR) exchanges, adds, or removes modules while an application is running, without a full reload. This can significantly speed up development as we dont have to reload our webpage  when we make some changes in our code. The browser directly reflects them without us having to reload the webpage.
 This is only valid for development mode and not for production.
 
@@ -379,65 +377,65 @@ we make say 2 files out of it. one which usually doesnt change and hence users h
 
 ```
 splitChunks: {
-      chunks: 'all',
-      maxInitialRequests: 10,
-      minSize: 0,
-      cacheGroups: {
-        vendor: {
-          test: /[\\/]node_modules[\\/]/,
-          name(module) {
-            const packageName = module.context.match(
-              /[\\/]node_modules[\\/](.*?)([\\/]|$)/,
-            )[1];
-            return `npm.${packageName.replace('@', '')}`;
-          },
-        },
+  chunks: 'all',
+  maxInitialRequests: 10,
+  minSize: 0,
+  cacheGroups: {
+    vendor: {
+      test: /[\\/]node_modules[\\/]/,
+      name(module) {
+        const packageName = module.context.match(
+          /[\\/]node_modules[\\/](.*?)([\\/]|$)/,
+        )[1];
+        return `npm.${packageName.replace('@', '')}`;
       },
-    }
+    },
+  },
+}
 ```
 This code generates vendor.js file (due to key named 'vendor') and contains all the files from our node_modules folder as defined in regex above.
 You can see this vendor.js file in your network tab when you load your app for the first time (in production mode as this is production configuration)
 You can  add multiple keys above like vendor and can pull out files from multiple folders in case vendor.js
 gets too huge in size to download or you want to split your files into multiple files as discussed earlier.
 
-TerserPlugin :- This plugin helps us minify JavaScript. We can pass various configuration options to this such as do we need comments in our minified file, can this file be cached and so on.
+**TerserPlugin** :- This plugin helps us minify JavaScript. We can pass various configuration options to this such as do we need comments in our minified file, can this file be cached and so on.
 ```
 minimize: true,
-    minimizer: [
-      new TerserPlugin({
-        terserOptions: {
-          warnings: false,
-          compress: {
-            comparisons: false,
-          },
-          parse: {},
-          mangle: true,
-          output: {
-            comments: false,
-            ascii_only: true,
-          },
+  minimizer: [
+    new TerserPlugin({
+      terserOptions: {
+        warnings: false,
+        compress: {
+          comparisons: false,
         },
-        parallel: true,
-        cache: true,
-        sourceMap: true,
-      }),
-    ],
+        parse: {},
+        mangle: true,
+        output: {
+          comments: false,
+          ascii_only: true,
+        },
+      },
+      parallel: true,
+      cache: true,
+      sourceMap: true,
+    }),
+],
 ```
 
-Performance :- 
+**Performance** :- 
 These options allows you to control how webpack notifies you of assets and entry points that exceed a specific file limit.
 ```
-    performance: {
-        assetFilter: assetFilename =>
-        !/(\.map$)|(^(main\.|favicon\.))/.test(assetFilename),
-    }
+performance: {
+    assetFilter: assetFilename =>
+    !/(\.map$)|(^(main\.|favicon\.))/.test(assetFilename),
+}
 ```
-Target :-
+**Target** :-
 ``` target: 'web' ```
 
 webpack can compile for multiple environments or targets. Usually this is set to web or Node. 
 
-DevTools :- 
+**DevTools** :- 
 ``` devtool: 'eval-source-map' ```
 This option controls if and how source maps are generated.
 So what are source maps ?
@@ -447,16 +445,16 @@ A source map provides a way of mapping code within a compressed file back to it�
 As the name suggests, a source map consists of a whole bunch of links to the original source code that can be used to map the code within a compressed file back to it’s original source.
 
 
-Resolve :- 
+**Resolve** :- 
 A resolver is a library which helps in locatig a module by its absolute path. These options change how modules are resolved.
 
 This is the reason why we could import anything directly from node_modules as you see in most of the React code because we have included it in our configuration as can be seen in the below code.
 ``` 
-    resolve: {
-        modules: ['node_modules', 'app'],
-        extensions: ['.js', '.jsx', '.react.js'],
-        mainFields: ['browser', 'jsnext:main', 'main'],
-    }
+resolve: {
+    modules: ['node_modules', 'app'],
+    extensions: ['.js', '.jsx', '.react.js'],
+    mainFields: ['browser', 'jsnext:main', 'main'],
+}
 ```
 
 ### package-lock.json
@@ -479,13 +477,13 @@ This file makes sure that when we run the npm install command, the npm installs 
 
 ```
 collectCoverageFrom: [
-    'app/**/*.{js,jsx}',
-    '!app/**/*.test.{js,jsx}',
-    '!app/*/RbGenerated*/*.{js,jsx}',
-    '!app/app.js',
-    '!app/global-styles.js',
-    '!app/*/*/Loadable.{js,jsx}',
-  ]
+  'app/**/*.{js,jsx}',
+  '!app/**/*.test.{js,jsx}',
+  '!app/*/RbGenerated*/*.{js,jsx}',
+  '!app/app.js',
+  '!app/global-styles.js',
+  '!app/*/*/Loadable.{js,jsx}',
+]
 ```
 This option requires collectCoverage to be set to true. collectCoverage indicates whether the coverage information should be collected while executing the test.
 collectCoverageFrom is an array of glob patterns as above, indicating a set of files for which coverage information should be collected.
@@ -503,7 +501,7 @@ coverageThreshold: {
 coverageThreshold will be used to configure minimum threshold enforcement for coverage results. If thresholds aren't met, jest will fail.
 
 ```
-  moduleDirectories: ['node_modules', 'app']
+moduleDirectories: ['node_modules', 'app']
 ```
 This is to  configure jest to find our files. Now that Jest knows how to process our files, we need to tell it how to find them. Similarly like webpack's modulesDirectories, we  have Jest's moduleDirectories options. This means that we can import files from these folders directly in our app without having to give a long absolute path for them.
 
@@ -521,14 +519,14 @@ generator functions. Hence, to make it work, what we need to do is convert this 
 
 ```
 presets: [
-    [
-      '@babel/preset-env',
-      {
-        modules: false,
-      },
-    ],
-    '@babel/preset-react',
-  ]
+  [
+    '@babel/preset-env',
+    {
+      modules: false,
+    },
+  ],
+  '@babel/preset-react',
+]
 ``` 
 In Babel, a preset is a set or group of plugins used to support particular language features. This means that multiple plugins together constitute a preset. The two presets Babel uses by default:
 
@@ -537,10 +535,10 @@ react: Adds support for JSX
 
 ```
 plugins: [
-    'styled-components',
-    '@babel/plugin-proposal-class-properties',
-    '@babel/plugin-syntax-dynamic-import',
-  ]
+  'styled-components',
+  '@babel/plugin-proposal-class-properties',
+  '@babel/plugin-syntax-dynamic-import',
+]
 ```
 Babel is a compiler (source code => output code). Like many other compilers it runs in 3 stages: parsing, transforming, and printing.
 
@@ -548,17 +546,17 @@ Now, out of the box Babel doesn't do anything. You will need to add plugins for 
 Eg: We load some pages in our app only if the user needs it, that is we dynamically import them at runtime. This is a new functionality in JS and the browsers still dont support it. Hence we need to add the plugin ``` @babel/plugin-syntax-dynamic-import ``` to be able to use this functionality.
 
 ```
-  env: {
-      production: {
-        only: ['app'],
-        plugins: [
-          'lodash',
-          'transform-react-remove-prop-types',
-          '@babel/plugin-transform-react-inline-elements',
-          '@babel/plugin-transform-react-constant-elements',
-        ],
-      }
+env: {
+  production: {
+    only: ['app'],
+    plugins: [
+      'lodash',
+      'transform-react-remove-prop-types',
+      '@babel/plugin-transform-react-inline-elements',
+      '@babel/plugin-transform-react-constant-elements',
+    ],
   }
+}
 ```
 ``` only: ['app'] ``` This means that in production environment, we transpile files only in the app folder, and use the mentioned plugins for this environment.
 
@@ -575,13 +573,13 @@ ESLint statically analyzes your code to quickly find syntax errors and problems.
 ``` env ``` which environments our script is designed to run in. Each environment brings with it a certain set of predefined global variables.
 
 ```
-  parserOptions: {
-      ecmaVersion: 6,
-      sourceType: 'module',
-      ecmaFeatures: {
-        jsx: true,
-      }
-  }
+parserOptions: {
+    ecmaVersion: 6,
+    sourceType: 'module',
+    ecmaFeatures: {
+      jsx: true,
+    }
+}
 ```
 When using a custom parser, the parserOptions configuration property is required for ESLint to work properly with features not in ECMAScript 5 by default.
 
@@ -598,9 +596,9 @@ But what exactly is middleware ?
 Say you’re running a web application on a web server with Node.js and Express. In this application, let’s say certain pages require that you log in.
 When the web server receives a request for data, Express (Node Server) gives us a request object with information about the user and the data they are requesting. We can see their IP address, what language their browser is set to, what url they are requesting, and if any parameters they have passed along. Express (Node Server) also gives us access to a response object that we can modify before the web server sends this response to the user. These objects are usually denoted as req, res.
 ```
-  app.get('*', (req, res) =>
-      res.sendFile(path.resolve(outputPath, 'index.html')),
-  )
+app.get('*', (req, res) =>
+    res.sendFile(path.resolve(outputPath, 'index.html')),
+)
 ```
 Middleware functions are the perfect place to modify these req and res objects with relevant information. For instance, after a user has logged in, we could fetch additional user details from a database, and then store those details in res.user which can later be used in our Node app.
 
@@ -618,7 +616,7 @@ This boilerplate includes an `app/.htaccess` file that does three things:
 
 ### .nginx.conf :-
 
-An `app/.nginx.conf` file is included that does the same on an Nginx server.
+An `app/.nginx.conf` file is included that does the same as mentioned above but on an Nginx server.
 
 ### reducers.js :-
 
@@ -629,6 +627,7 @@ export default function createReducer(injectedReducers = {}) {
     router: connectRouter(history),
     ...injectedReducers,
   });
+}
 ```
 We usually write one reducer per component. But to form a single source of truth or store as we call it,
 we combine all the reducers here into 1 single store with the combineReducers function.
@@ -650,18 +649,18 @@ This is a higher order component that helps us display a loader animation or som
 As discussed earlier, we usually write one reducer per component. So, we have a HOC function in injectReducer.js which returns us a wrapped component, which injects the reducer in the global store as soon as the component is mounted.
 The reducerInjectors.js file actually provides us with the injector function which the injectReducer.js file uses to inject the reducer in the global store.
 ```
-  constructor(props, context) {
-        super(props, context);
+constructor(props, context) {
+  super(props, context);
 
-        getInjectors(context.store).injectReducer(key, reducer);
-  }
+  getInjectors(context.store).injectReducer(key, reducer);
+}
 ```
 The injectReducer.js also provides us with useInjectReducer function which we use in our component to inject the component's reducer into the global store as below.
 ```
-  useInjectReducer({ 
-    key: 'ComponentName', 
-    reducer: ComponentReducer
-  })
+useInjectReducer({ 
+  key: 'ComponentName', 
+  reducer: ComponentReducer
+})
 ```
 The key should be unique throughout the app i.e. no component can inject reducer with 2 same keys.
 
@@ -671,33 +670,33 @@ we have a HOC function in injectSaga.js which returns us a wrapped component, wh
 We eject these sagas from the global store because we assume that once the component is unmounted, we wont be firing the API calls (sagas) of that component.
 However, you can configure this behavior with the following 3 'modes' as you can see in sagaInjectors.js :-
 
-'DAEMON' mode injects the saga when the component is mounted but never ejects or cancels it. This is the default mode we have assumed in sagaInjectors.js file as you can see below. This means that if we explicitly dont specify the mode, DAEMON mode will be the default behavior.
+* 'DAEMON' mode injects the saga when the component is mounted but never ejects or cancels it. This is the default mode we have assumed in sagaInjectors.js file as you can see below. This means that if we explicitly dont specify the mode, DAEMON mode will be the default behavior.
 ``` mode: descriptor.mode || DAEMON ```
 
-'RESTART_ON_REMOUNT' mode injects the saga when the component is mounted and ejects it when the component is unmounted. This improves the performance of our app. This is because when we dispatch a redux action from our component to fetch some data from the server, we go through all the keys of the sagas which are meant for this particular redux action. Hence if we keep ejecting these sagas when the component is no more,we will have less sagas to traverse through thereby increasing the performance of our app.
+* 'RESTART_ON_REMOUNT' mode injects the saga when the component is mounted and ejects it when the component is unmounted. This improves the performance of our app. This is because when we dispatch a redux action from our component to fetch some data from the server, we go through all the keys of the sagas which are meant for this particular redux action. Hence if we keep ejecting these sagas when the component is no more,we will have less sagas to traverse through thereby increasing the performance of our app.
 
-'ONCE_TILL_UNMOUNT' is when we want to run that saga or fire that respective API call only once during the component lifecycle.
+* 'ONCE_TILL_UNMOUNT' is when we want to run that saga or fire that respective API call only once during the component lifecycle.
  
 The sagaInjectors.js file actually provides us with the injector function which the injectSaga.js file uses to inject the sagas in the global store.
 ```
-  constructor(props, context) {
-    super(props, context);
+constructor(props, context) {
+  super(props, context);
 
-    this.injectors = getInjectors(context.store);
+  this.injectors = getInjectors(context.store);
 
-    this.injectors.injectSaga(key, { saga, mode }, this.props);
-  }
+  this.injectors.injectSaga(key, { saga, mode }, this.props);
+}
 ```
 The injectSaga.js also provides us with useInjectSaga function which we use in our component to inject the component's saga's into the global store as below. You need to call useInjectSaga function per API call you wish to do like this :
 ```
-  useInjectSaga({ 
-    key: 'SagaName1', 
-    saga: Saga1
-  });
-  useInjectSaga({ 
-    key: 'SagaName2', 
-    saga: Saga2
-  })
+useInjectSaga({ 
+  key: 'SagaName1', 
+  saga: Saga1
+});
+useInjectSaga({ 
+  key: 'SagaName2', 
+  saga: Saga2
+})
 ```
 If you have a lot of API calls to be made to the server, you can write a function in injectSaga.js file which accepts an array of sagas, then loops through all these sagas and injects them rather than to write the useInjectSaga function for each API call as we have written above.
 

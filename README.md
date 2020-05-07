@@ -81,12 +81,13 @@ our source code. The repository field just describes that repo url.
 *  ``` engines ``` This specifies the minimal requirements of our module to function fully. For example,
 we need npm version installed to be above 5.0.0
 
-*  ``` 
+``` 
 "browserslist": [
   "last 2 versions",
   "> 1%",
   "IE 10"
-] ``` 
+] 
+``` 
 This tells which browsers (and their versions) we want to support. It’s referenced by Babel, Autoprefixer, and other tools, to only add the polyfills and fallbacks needed to the browsers you target. This configuration means we want to support the last 2 major versions of all browsers with at least 1% of usage (from the CanIUse.com stats) and Internet explorer above version 10.
 
 *  ``` "license": "ISC" ``` This is a string that tells the users who use this code that under what terms 
@@ -118,19 +119,19 @@ production.
 
 ### package-lock.json
 
-Consider a dependency stated as "express": "^4.16.4".
+Consider a dependency stated as ``` "express": "^4.16.4" ```
 
 The publisher of this module (without using package-lock.json) would have express version 4.16.4 installed since they installed the latest version.
 
-If express has published a new version (4.17.x) by the time I download this module and try to install dependencies on it, I can download the latest version (due to caret symbol ^ as above).
+Assume express has published a new version (4.17.x) by the time I download this app (react-boilerplate-fully-explained) and try to install the dependencies, I download the latest version of express (due to caret symbol ^ as above).
 
-The problem with the above is that if version 4.17.x contains a bug, the user who clones this project later on and exexutes the npm install command will get this buggy 4.17.x version of express which might cause the project to not work as per our expectations.
+The problem with the above approach is that if version 4.17.x contains a bug, the user who clones this project later on and exexutes the npm install command will get this buggy 4.17.x version of express which might cause the project to not work as per our expectations.
 
 The same thing could happen in the production environment, and you’d have no idea why it was failing.
 
-If as developers, we want the user to install the packages with the exact set of versions as we, the developers had, thats when the package-lock.json file comes to our rescue.
+If as developers, we want our users to install the packages with the exact set of versions as we, the developers had, thats when the package-lock.json file comes to our rescue.
 
-This file makes sure that when we run the npm install command, the npm installs the exact version as in the package-lock.json file ignoring the package.json file. (thereby creating an exact replica of the node packages and their respective versions the developers had)
+This file makes sure that when our users run the npm install command, the npm installs the exact version as in the package-lock.json file ignoring the package.json file. (thereby creating an exact replica of the node packages and their respective versions the developers had)
 
 ### jest.config.js :-
 
@@ -144,8 +145,8 @@ collectCoverageFrom: [
   '!app/*/*/Loadable.{js,jsx}',
 ]
 ```
-This option requires collectCoverage to be set to true. collectCoverage indicates whether the coverage information should be collected while executing the test.
-collectCoverageFrom is an array of glob patterns as above, indicating a set of files for which coverage information should be collected.
+This option requires ``` collectCoverage ``` property to be set to true. collectCoverage indicates whether the coverage information should be collected while executing the test.
+``` collectCoverageFrom ``` is an array of glob patterns as above, indicating a set of files for which coverage information should be collected.
 
 ```
 coverageThreshold: {
@@ -157,24 +158,24 @@ coverageThreshold: {
     },
   }
 ```
-coverageThreshold will be used to configure minimum threshold enforcement for coverage results. If thresholds aren't met, jest will fail.
+``` coverageThreshold ``` will be used to configure minimum threshold enforcement for coverage results. If thresholds aren't met, jest will fail.
 
 ```
 moduleDirectories: ['node_modules', 'app']
 ```
-This is to  configure jest to find our files. Now that Jest knows how to process our files, we need to tell it how to find them. Similarly like webpack's modulesDirectories, we  have Jest's moduleDirectories options. This means that we can import files from these folders directly in our app without having to give a long absolute path for them.
+This is to configure jest to find our files. Now that Jest knows how to process our files, we need to tell it how to find them. Similarly like webpack's modulesDirectories, we have Jest's moduleDirectories option. This means that we can import files from these folders directly in our app without having to give a long absolute path for them.
 
 ``` moduleNameMapper ``` allows to to stub out resources, like images or styles with a single module.
 
-``` setupFilesAfterEnv ``` ``` setupFiles ``` A list of paths to modules that run some code to configure or set up the testing framework before each test file in the suite is executed. It's also worth noting that setupFiles will execute before setupFilesAfterEnv.
+``` setupFilesAfterEnv ``` ``` setupFiles ``` A list of paths to modules that run some code to set up the basic testing framework before each test file in the suite is executed. It's also worth noting that setupFiles will execute before setupFilesAfterEnv.
 
 ``` testRegex: 'tests/.*\\.test\\.js$' ``` The pattern or patterns Jest uses to detect test files.
-No wonder, it is this option that when we run the ``` npm run test ``` command, that it is automatically able to scan and detect our test files.
+No wonder, it is this option that when we run the ``` npm run test ``` command, it is automatically able to scan and detect our test files.
 
 ### babel.config.js :-
 
-Browsers dont understand the new modern Javascript syntax like the Class, Promises and the 
-generator functions. Hence, to make it work, what we need to do is convert this new JS syntax to the old ES5 syntax which all browsers can understand, and this is what Babel does for us. It transpiles the new ES6 JS syntax to the old ES5 syntax.
+Browsers dont understand the new modern Javascript syntax like Class, Promises and the 
+generator functions. Hence, to make these things work, what we need to do is convert this new JS syntax to the old ES5 syntax which all browsers can understand, and this is what Babel does for us. It transpiles the new ES6 JS syntax to the old ES5 syntax.
 
 ```
 presets: [
@@ -187,10 +188,10 @@ presets: [
   '@babel/preset-react',
 ]
 ``` 
-In Babel, a preset is a set or group of plugins used to support particular language features. This means that multiple plugins together constitute a preset. The two presets Babel uses by default:
+In Babel, a preset is a set or group of plugins used to support particular language features. This means that multiple plugins together constitute a preset. The two presets Babel uses by default are:
 
-es2015: Adds support for ES2015 (or ES6) JavaScript
-react: Adds support for JSX
+* es2015: Adds support for ES2015 (or ES6) JavaScript
+* react: Adds support for JSX
 
 ```
 plugins: [
@@ -202,7 +203,7 @@ plugins: [
 Babel is a compiler (source code => output code). Like many other compilers it runs in 3 stages: parsing, transforming, and printing.
 
 Now, out of the box Babel doesn't do anything. You will need to add plugins for Babel to do the task you want.
-Eg: We load some pages in our app only if the user needs it, that is we dynamically import them at runtime. This is a new functionality in JS and the browsers still dont support it. Hence we need to add the plugin ``` @babel/plugin-syntax-dynamic-import ``` to be able to use this functionality.
+Eg: We load some pages (say which are very heavy) in our app only if the user needs it, that is we dynamically import them at runtime. This is a new functionality in JS and the browsers still dont support it. Hence we need to add the plugin ``` @babel/plugin-syntax-dynamic-import ``` to be able to use this functionality.
 
 ```
 env: {
@@ -221,7 +222,7 @@ env: {
 
 ### .eslintrc.js :-
 
-ESLint statically analyzes your code to quickly find syntax errors and problems. ESLint is built into most text editors. Most of these syntactic errors can be fixed directly by ESLint. We can customize the default optionos in this file to preprocess our code, use custom parsers, and write our own rules.
+ESLint analyzes our code to quickly find syntax errors and problems. ESLint is built into most modern text editors today. Most of these syntactic errors can be fixed directly by ESLint. We can customize the default options in this file as to how we preprocess our code, use custom parsers, and write our own rules.
 
 ``` parser: 'babel-eslint' ``` Which parser to use to analyze our code and report errors. By default, ESLint uses Espree as its parser.
 

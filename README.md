@@ -588,3 +588,117 @@ When using a custom parser, the parserOptions configuration property is required
 ``` rules ``` We define rules with the help of which we can have our basic syntax validation. Eg. how much indentation we need after an import statement, do we need a new line after all imports etc.
 
 ``` settings ``` We can add settings object to ESLint configuration file and it is supplied to every rule that will be executed. 
+
+### Server Folder :-
+As discussed earlier, the server folder contains all the development server and the production server related configuration files.
+
+This contains a middleware folder which in turn contains the development and production middlewares.
+But what exactly is middleware ? 
+
+Say you’re running a web application on a web server with Node.js and Express. In this application, let’s say certain pages require that you log in.
+When the web server receives a request for data, Express (Node Server) gives us a request object with information about the user and the data they are requesting. We can see their IP address, what language their browser is set to, what url they are requesting, and if any parameters they have passed along. Express (Node Server) also gives us access to a response object that we can modify before the web server sends this response to the user. These objects are usually denoted as req, res.
+```
+  app.get('*', (req, res) =>
+      res.sendFile(path.resolve(outputPath, 'index.html')),
+  )
+```
+Middleware functions are the perfect place to modify these req and res objects with relevant information. For instance, after a user has logged in, we could fetch additional user details from a database, and then store those details in res.user which can later be used in our Node app.
+
+The index.js is the main file here which contains all the configuration. It is from here that we start listening on port 3000 for our application. (see the port number defined in port.js file)
+
+We might want to log errors which occur on our server when the users make requests, and we might prefer to keep logging these errors may be to some file, so that later on we can rectify them.
+
+### .httaccess :-
+This boilerplate includes an `app/.htaccess` file that does three things:
+
+1.  Redirect all traffic to HTTPS because ServiceWorker only works for encrypted
+    traffic.
+2.  Rewrite all pages (e.g. `yourdomain.com/subpage`) to `yourdomain.com/index.html`
+    to let `react-router` take care of presenting the correct page.
+
+### .nginx.conf :-
+
+An `app/.nginx.conf` file is included that does the same on an Nginx server.
+
+### reducers.js :-
+
+```
+export default function createReducer(injectedReducers = {}) {
+  const rootReducer = combineReducers({
+    language: languageProviderReducer,
+    router: connectRouter(history),
+    ...injectedReducers,
+  });
+```
+We usually write one reducer per component. But to form a single source of truth or store as we call it,
+we combine all the reducers here into 1 single store with the combineReducers function.
+You can have global reducers injected directly here as you can see above (means these should be available at any point of the app no matter what), we directly inject language and router reducers.
+
+### configureStore.js :-
+The above combineReducers function is called from this file to create a single source of truth or store.
+
+
+## Utils Folder :-
+
+### history.js :-
+A `history` object is created, which remembers all the browsing history for your app. This is used by the ConnectedRouter to know which pages your users visit. Extremely helpful if we want to perform some analytics on pages our user keeps visiting frequently. There should be only one history object for our entire app, and hence we create that object in separate file meant only for it and then import it in our project whenever we need it, thus avoiding if create it multiple times by mistake in separate files.
+
+### loadable.js :-
+This is a higher order component that helps us display a loader animation or some loading text till the component files and its assets are getting downloaded from the server.
+
+### injectReducer.js && reducerInjectors.js :-
+As discussed earlier, we usually write one reducer per component. So, we have a HOC function in injectReducer.js which returns us a wrapped component, which injects the reducer in the global store as soon as the component is mounted.
+The reducerInjectors.js file actually provides us with the injector function which the injectReducer.js file uses to inject the reducer in the global store.
+```
+  constructor(props, context) {
+        super(props, context);
+
+        getInjectors(context.store).injectReducer(key, reducer);
+  }
+```
+The injectReducer.js also provides us with useInjectReducer function which we use in our component to inject the component's reducer into the global store as below.
+```
+  useInjectReducer({ 
+    key: 'ComponentName', 
+    reducer: ComponentReducer
+  })
+```
+The key should be unique throughout the app i.e. no component can inject reducer with 2 same keys.
+
+### injectSaga.js && sagaInjectors.js :-
+We write multiple sagas in a component i.e. one saga per API call. Similarly like reducers, 
+we have a HOC function in injectSaga.js which returns us a wrapped component, which injects the sagas in the global store as soon as the component is mounted and most importantly, it also ejects the sagas from the global store when the component is unmounted.
+We eject these sagas from the global store because we assume that once the component is unmounted, we wont be firing the API calls (sagas) of that component.
+However, you can configure this behavior with the following 3 'modes' as you can see in sagaInjectors.js :-
+
+'DAEMON' mode injects the saga when the component is mounted but never ejects or cancels it. This is the default mode we have assumed in sagaInjectors.js file as you can see below. This means that if we explicitly dont specify the mode, DAEMON mode will be the default behavior.
+``` mode: descriptor.mode || DAEMON ```
+
+'RESTART_ON_REMOUNT' mode injects the saga when the component is mounted and ejects it when the component is unmounted. This improves the performance of our app. This is because when we dispatch a redux action from our component to fetch some data from the server, we go through all the keys of the sagas which are meant for this particular redux action. Hence if we keep ejecting these sagas when the component is no more,we will have less sagas to traverse through thereby increasing the performance of our app.
+
+'ONCE_TILL_UNMOUNT' is when we want to run that saga or fire that respective API call only once during the component lifecycle.
+ 
+The sagaInjectors.js file actually provides us with the injector function which the injectSaga.js file uses to inject the sagas in the global store.
+```
+  constructor(props, context) {
+    super(props, context);
+
+    this.injectors = getInjectors(context.store);
+
+    this.injectors.injectSaga(key, { saga, mode }, this.props);
+  }
+```
+The injectSaga.js also provides us with useInjectSaga function which we use in our component to inject the component's saga's into the global store as below. You need to call useInjectSaga function per API call you wish to do like this :
+```
+  useInjectSaga({ 
+    key: 'SagaName1', 
+    saga: Saga1
+  });
+  useInjectSaga({ 
+    key: 'SagaName2', 
+    saga: Saga2
+  })
+```
+If you have a lot of API calls to be made to the server, you can write a function in injectSaga.js file which accepts an array of sagas, then loops through all these sagas and injects them rather than to write the useInjectSaga function for each API call as we have written above.
+
+Also, the key should be unique throughout the component and also throughout the app i.e. no saga in an entire app can have 2 same kays.

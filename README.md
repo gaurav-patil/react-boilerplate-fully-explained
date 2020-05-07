@@ -12,9 +12,7 @@ $ npm start
 ```
 Now, navaigate to [localhost:3000](http://localhost:3000) to run the app.
 
-How do you identify if a given package is a node package ? What happens when you initialise
-the repository with ``` npm init ``` ? The answer is it creates a package.json file. So this is what helps 
-us identify whether a given package is a node package.
+Lets start with a basic question. How do we identify if a given package is a node package ? What happens when you initialise the repository with ``` npm init ``` command ? The answer is it creates a package.json file. So this is what helps us identify whether a given package is a node package.
 
 ## Typical folder structure of any React Boilerplate :-
 
@@ -26,7 +24,7 @@ is the folder where you are going to spend almost 99% of your time.
 * The server folder contains all the development server and the production server related configuration
 files.
 
-* The internals folder contains the most important webpack configuration (the main engine of our app) as well as the scripts which we use use in the scripts tag in our package.json file.
+* The internals folder contains the most important webpack configuration (the main engine of our app) as well as the script files which we use use in the scripts tag in our package.json file.
 
 ## How does the app start running ?
 
